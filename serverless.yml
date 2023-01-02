@@ -1,0 +1,43 @@
+org: nancybetasoft17
+app: aws-node-http-api-project
+service: aws-node-http-api-project
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:   
+        - dynamo:DescribeTable
+        - dynamo:Query
+        - dynamo:Scan
+        - dynamo:GetItem
+        - dynamo:PutItem
+        - dynamo:UpdateItem
+        - dynamo:DeleteItem
+      Resource: "arn:aws:dynamodb:us-east-1:*:*"
+
+functions:
+  create:
+    handler: todos/create.create
+    events:
+      - httpApi:
+          path: /todos
+          method: post
+
+resources:
+  Resources:
+   TodosDynamoDbTable:
+    Type: 'AWS:DynamoDB:Table'
+    Properties:
+      AttributeDefinition:
+        AttributeName: id
+        AttributeType: S
+      KeyScheme:
+        AttributeName: id
+        KeyType: HASH
+      ProvisionThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      TableName: 'todos'
